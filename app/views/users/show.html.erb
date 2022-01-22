@@ -26,11 +26,13 @@
 </div>
 
 <div class="btn-users-show">
-  <a>【】件のお知らせがあります</a>
+  <% if current_user.admin? %>
+  <a>【所属長承認申請のお知らせ】件のお知らせがあります</a>
   <br>
-  <a>【】件のお知らせがあります</a>
+  <a>【勤怠変更申請のお知らせ】件のお知らせがあります</a>
   <br>
-  <a>【】件のお知らせがあります</a>
+  <a>【残業申請のお知らせ】件のお知らせがあります</a>
+  <% end %>
   <br>
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
   <%= link_to "CSV出力", '#', class: "btn btn-primary" %>
@@ -75,22 +77,22 @@
           <td><%= link_to "残業申請", '#', class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td><%= $days_of_the_week[day.worked_on.wday] %></td>
-          <td><%= l(day.started_at, format: :time) if day.started_at.present? %></td>
-          <td></td>
+          <td><%= l(day.started_at, format: :hour) if day.started_at.present? %></td>
+          <td><%= l(day.started_at, format: :minute) if day.started_at.present? %></td>
           <td>
             <% if btn_text = attendance_state(day) %>
-              <%= link_to "#{btn_text}登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
+              <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
             <% end %>
           </td>
-          <td><%= l(day.finished_at, format: :time) if day.finished_at.present? %></td>
+          <td><%= l(day.finished_at, format: :hour) if day.finished_at.present? %></td>
+          <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
           <td><%= day.note %></td>
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
               <%= str_times = working_times(day.started_at, day.finished_at) %>
               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
             <% end %>
-            </td>
-          <td></td>
+          </td>
           <td></td>
           <td></td>
           <td></td>
@@ -107,8 +109,7 @@
         <td colspan="2"></td>
         <td colspan="6"></td>
         <td></td>
-        <td colspan="4">
-        </td>
+        <td colspan="4"></td>
         <td>
           所属長承認 上長Bから承認済
           <br>
