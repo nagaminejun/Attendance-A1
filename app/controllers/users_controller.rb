@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :basic_info_modification]
-  before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :basic_info_modification, :list_of_employees]
+  before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :list_of_employees]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
   before_action :set_one_month, only: :show
@@ -60,6 +60,13 @@ class UsersController < ApplicationController
   
   def basic_info_modification
     
+  end
+  
+  def list_of_employees
+    @in_attendances = Attendance.where(worked_on: Date.current)
+                                 .where(finished_at: nil)
+                                 .where.not(started_at: nil)
+                                 .includes(:user)
   end
 
   private

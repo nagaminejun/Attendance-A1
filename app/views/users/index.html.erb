@@ -1,8 +1,42 @@
 <% provide(:title, 'All Users') %>
 <h1>ユーザー一覧</h1>
 
+<div class="csv_holder">
+  <p><%= submit_tag 'ファイル選択', type: 'button' %>選択されていません</p>
+  <div>
+    <%= link_to "CSVインポート", '#', class: "btn btn-primary" %>
+  </div>
+</div>
+
+<% @users.each do |user| %>
+    <div>
+      <p>
+        <div class="col-md-11 col-md-offset-1">
+          <% if current_user.admin? && !current_user?(user) %>
+          <%= user.name %><br>
+          <%= link_to "削除", user, method: :delete,
+                                    data: { confirm: "削除してもよろしいですか？" },
+                                    class: "btn btn-primary btn-default" %><br>
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <button type="button" data-toggle="collapse" data-target="#collapse<%= user.id %>" class="btn btn-primary btn-lg">編集</button>
+                </h4>
+              </div>
+              <div id="collapse<%= user.id %>" class="panel-collapse collapse">
+                <div class="panel-body"><%= render 'user', user: user %></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </p>
+    </div>
+<% end %>
+
 <div class="col-md-10 col-md-offset-1">
   <%= will_paginate %>
+  
   <table class="table table-condensed table-hover" id="table-users">
     <thead>
       <tr>
@@ -45,3 +79,7 @@
 
 <!--モーダルウインドウ表示-->
 <div id="edit-basic-info" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+
+
+
+
