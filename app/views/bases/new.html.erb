@@ -1,9 +1,8 @@
-<% provide(:title, "Base_edit") %>
-<h1>拠点情報の更新</h1>
+<h1>拠点情報の追加</h1>
 
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
-    <%= form_with(model: @base, local: true) do |f| %>
+    <%= form_with model: @base, url: bases_path, local: true do |f| %>
 ​
         
       <%= f.label :base_id, class: "label-user--edit" %>
@@ -15,7 +14,7 @@
       <%= f.label :base_type, class: "label-user--edit" %>
       <%= f.text_field :base_type, class: "form-control" %>
       
-      <%= f.submit "更新", method: :patch, class: "btn btn-primary btn-block btn-user--edit" %>
+      <%= f.submit "新規作成", class: "btn btn-primary btn-block btn-signup" %>
     <% end %>
   </div>
 </div>
