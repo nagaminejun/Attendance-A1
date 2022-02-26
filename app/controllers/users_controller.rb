@@ -68,6 +68,25 @@ class UsersController < ApplicationController
                                  .where.not(started_at: nil)
                                  .includes(:user)
   end
+  
+  def import
+    if params[:file].blank?
+      flash[:warning] = "CSVファイルが選択されていません。"
+      redirect_to users_url and return
+    elsif File.extname(params[:file].original_filename) != ".csv"
+          flash[:warning] = "CSVファイルではありません。"
+          redirect_to users_url and return
+    else
+      ActiveRecord::Base.transaction do
+        User.import(params[:file])
+      end
+    end
+    flash[:success] = "ユーザー情報をインポートしました。"
+    redirect_to users_url
+  rescue ActiveRecord::RecordInvalid
+      flash[:warning] = "無効な入力データがあった為、追加更新をキャンセルしました。"
+      redirect_to users_url
+  end
 
   private
 
@@ -76,6 +95,15 @@ class UsersController < ApplicationController
     end
 
     def basic_info_params
-      params.require(:user).permit(:department, :basic_time, :work_time)
+      params.require(:user).permit(:name,
+                                   :email,
+                                   :department,
+                                   :password,
+                                   :employee_number,
+                                   :uid,
+                                   :designated_work_start_time,
+                                   :designated_work_end_time,
+                                   :basic_time,
+                                   :work_time)
     end
 end

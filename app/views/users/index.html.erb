@@ -2,10 +2,10 @@
 <h1>ユーザー一覧</h1>
 
 <div class="csv_holder">
-  <p><%= submit_tag 'ファイル選択', type: 'button' %>選択されていません</p>
-  <div>
-    <%= link_to "CSVインポート", '#', class: "btn btn-primary" %>
-  </div>
+  <%= form_tag import_users_path, multipart: true do %>
+    <%= file_field_tag :file %>
+    <%= submit_tag "CSVインポート", class: "btn btn-primary" %>
+  <% end %>
 </div>
 
 <% @users.each do |user| %>
