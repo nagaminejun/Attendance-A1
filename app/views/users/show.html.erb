@@ -8,9 +8,9 @@
         <%= link_to "⇨", user_path(date: @first_day.next_month), class: "btn btn-primary btn-right" %>
         </td>
       <td>
-        指定勤務開始時間：<%= format_basic_info(@user.work_time) %>
+        指定勤務開始時間：<%= format_basic_info(@user.designated_work_start_time) %>
         <br>
-        指定勤務終了時間：
+        指定勤務終了時間：<%= format_basic_info(@user.designated_work_end_time) %>
       </td>
       <td>基本勤務時間：<%= format_basic_info(@user.basic_time) %></td>
       <td>月初日：<%= l(@first_day, format: :short) %></td>
@@ -35,7 +35,7 @@
   <% end %>
   <br>
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
-  <%= link_to "CSV出力", '#', class: "btn btn-primary" %>
+  <%= link_to "CSV出力", attendances_edit_one_month_user_path(format: :csv), class: "btn btn-primary" %>
   <br>
   <%= link_to "勤怠修正ログ（承認済）", '#', class: "btn btn-primary" %>
 </div>
@@ -86,13 +86,13 @@
           </td>
           <td><%= l(day.finished_at, format: :hour) if day.finished_at.present? %></td>
           <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
-          <td><%= day.note %></td>
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
               <%= str_times = working_times(day.started_at, day.finished_at) %>
               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
             <% end %>
           </td>
+          <td><%= day.note %></td>
           <td></td>
           <td></td>
           <td></td>
@@ -111,7 +111,7 @@
         <td></td>
         <td colspan="4"></td>
         <td>
-          所属長承認 上長Bから承認済
+          △△△△△△△△△△△
           <br>
           <%= link_to "申請", '#', class: "btn btn-md btn-primary btn-block btn-approval" %>
           </td>

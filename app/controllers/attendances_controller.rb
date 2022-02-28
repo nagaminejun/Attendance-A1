@@ -27,6 +27,13 @@ class AttendancesController < ApplicationController
   end
 
   def edit_one_month
+    @attendances = Attendance.all
+     respond_to do |format|
+      format.html
+      format.csv do |csv|
+        send_attendance_csv(@attendances)
+      end
+    end
   end
 
   def update_one_month
@@ -42,6 +49,7 @@ class AttendancesController < ApplicationController
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
     redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
+  
 
   private
 
@@ -59,5 +67,23 @@ class AttendancesController < ApplicationController
         flash[:danger] = "編集権限がありません。"
         redirect_to(root_url)
       end  
+    end
+    
+    def send_attendance_csv(attendances)
+      csv_data = CSV.generate do |csv|
+        header = %w(日付 出社 退社)
+        csv << header
+        attendances.each do |attendance|
+          values = [
+            l(attendance.worked_on, format: :short),
+            if attendance.started_at.present?
+            l(attendance.started_at, format: :time) end ,
+            if attendance.finished_at.present?
+            l(attendance.finished_at, format: :time)  end,
+            ]
+            csv << values
+          end
+        end
+        send_data(csv_data, filename: "勤怠一覧表.csv")
     end
 end

@@ -3,10 +3,10 @@ class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :list_of_employees]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
-  before_action :set_one_month, only: :show
+  before_action :set_one_month, only: [:show]
 
   def index
-    @users = User.paginate(page: params[:page])
+    @users = User.all
   end
 
   def show
@@ -106,4 +106,6 @@ class UsersController < ApplicationController
                                    :basic_time,
                                    :work_time)
     end
+
 end
+

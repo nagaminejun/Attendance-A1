@@ -1,5 +1,6 @@
 class Attendance < ApplicationRecord
   belongs_to :user
+  require 'csv'
 
   validates :worked_on, presence: true
   validates :note, length: { maximum: 50 }
@@ -19,3 +20,4 @@ class Attendance < ApplicationRecord
     end
   end
 end
+
