@@ -19,7 +19,15 @@ Rails.application.routes.draw do
       patch 'attendances/update_one_month' 
       get 'basic_info_modification'
       get 'list_of_employees'
+      
     end
-    resources :attendances, only: :update 
+    resources :attendances do
+      patch 'update'
+      get 'edit_overwork_reqest'
+      get 'sample'
+      patch 'update_overwork_reqest'
+    end
   end
+  
+  
 end

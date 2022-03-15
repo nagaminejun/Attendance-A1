@@ -59,7 +59,6 @@ class UsersController < ApplicationController
   end
   
   def basic_info_modification
-    
   end
   
   def list_of_employees
@@ -87,6 +86,9 @@ class UsersController < ApplicationController
       flash[:warning] = "無効な入力データがあった為、追加更新をキャンセルしました。"
       redirect_to users_url
   end
+  
+
+  
 
   private
 

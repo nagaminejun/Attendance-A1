@@ -35,7 +35,7 @@
   <% end %>
   <br>
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
-  <%= link_to "CSV出力", attendances_edit_one_month_user_path(format: :csv), class: "btn btn-primary" %>
+  <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day, format: :csv), class: "btn btn-primary" %>
   <br>
   <%= link_to "勤怠修正ログ（承認済）", '#', class: "btn btn-primary" %>
 </div>
@@ -74,7 +74,7 @@
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
-          <td><%= link_to "残業申請", '#', class: "btn btn-primary" %></td>
+          <td><%= link_to "残業申請", user_attendance_edit_overwork_reqest_path(@user, day), remote: true, class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td><%= $days_of_the_week[day.worked_on.wday] %></td>
           <td><%= l(day.started_at, format: :hour) if day.started_at.present? %></td>
@@ -97,7 +97,7 @@
           <td></td>
           <td></td>
           <td></td>
-          <td></td>
+          <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td>
         </tr>
       <% end %>
     </tbody>
@@ -112,6 +112,11 @@
         <td colspan="4"></td>
         <td>
           △△△△△△△△△△△
+          <select>
+            <option value="">選択してください</option>
+              <option value="3">上長A</option>
+              <option value="3">上長B</option>
+          </select>
           <br>
           <%= link_to "申請", '#', class: "btn btn-md btn-primary btn-block btn-approval" %>
           </td>
@@ -119,3 +124,8 @@
     </tfoot>    
   </table>
 </div>
+
+<!--モーダルウインドウ表示-->
+<div id="edit-overwork-reqest" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+
+

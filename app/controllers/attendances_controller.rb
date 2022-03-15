@@ -1,8 +1,8 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
-  before_action :logged_in_user, only: [:update, :edit_one_month]
+  before_action :logged_in_user, only: [:update, :edit_one_month, :sample]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
-  before_action :set_one_month, only: :edit_one_month
+  before_action :set_one_month, only: [:edit_one_month]
 
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
 
@@ -27,7 +27,6 @@ class AttendancesController < ApplicationController
   end
 
   def edit_one_month
-    @attendances = Attendance.all
      respond_to do |format|
       format.html
       format.csv do |csv|
@@ -50,6 +49,35 @@ class AttendancesController < ApplicationController
     redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
   
+  def send_attendance_csv(attendances)
+    csv_data = CSV.generate do |csv|
+      header = %w(日付 出社 退社)
+      csv << header
+      attendances.each do |attendance|
+        values = [
+          l(attendance.worked_on, format: :short),
+          if attendance.started_at.present?
+          l(attendance.started_at, format: :time) end ,
+          if attendance.finished_at.present?
+          l(attendance.finished_at, format: :time)  end,
+          ]
+          csv << values
+        end
+      end
+      send_data(csv_data, filename: "勤怠一覧表.csv")
+  end
+  
+  def edit_overwork_reqest
+    @attendance = Attendance.find(params[:attendance_id])
+  end
+  
+  def update_overwork_reqest
+    
+  end
+  
+  def sample
+    @attendance = Attendance.find(params[:attendance_id])
+  end
 
   private
 
@@ -69,21 +97,5 @@ class AttendancesController < ApplicationController
       end  
     end
     
-    def send_attendance_csv(attendances)
-      csv_data = CSV.generate do |csv|
-        header = %w(日付 出社 退社)
-        csv << header
-        attendances.each do |attendance|
-          values = [
-            l(attendance.worked_on, format: :short),
-            if attendance.started_at.present?
-            l(attendance.started_at, format: :time) end ,
-            if attendance.finished_at.present?
-            l(attendance.finished_at, format: :time)  end,
-            ]
-            csv << values
-          end
-        end
-        send_data(csv_data, filename: "勤怠一覧表.csv")
-    end
+
 end
