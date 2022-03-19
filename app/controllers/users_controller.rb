@@ -83,7 +83,7 @@ class UsersController < ApplicationController
     flash[:success] = "ユーザー情報をインポートしました。"
     redirect_to users_url
   rescue ActiveRecord::RecordInvalid
-      flash[:warning] = "無効な入力データがあった為、追加更新をキャンセルしました。"
+      flash[:warning] ="無効な入力データがあった為、追加更新をキャンセルしました。"
       redirect_to users_url
   end
   

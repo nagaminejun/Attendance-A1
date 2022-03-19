@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       patch 'update'
       get 'edit_overwork_reqest'
       get 'sample'
+      patch 'sample_update_overwork_reqest'
       patch 'update_overwork_reqest'
     end
   end

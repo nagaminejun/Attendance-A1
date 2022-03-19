@@ -1,4 +1,4 @@
-<% provide(:button_text, '変更を送信する') %>
+<% provide(:button_text, '送信') %>
 
 <div class="modal-dialog modal-lg modal-dialog-center">
   <div class="modal-content">
@@ -6,39 +6,42 @@
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">×</span>
       </button>
-      <h1 class="modal-title">サンプル</h1>
+      <h1 class="modal-title">残業申請のサンプル</h1>
     </div>
     <div class="modal-body">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>日付</th>
-            <th>曜日</th>
-            <th>終了予定時間</th>
-            <th>翌日</th>
-            <th>業務処理内容</th>
-            <th>指示者確認印</th>
-          </tr>
-        </thead>
-        <tbody>
+      <%= form_with(model: @attendance, url: user_attendance_sample_update_overwork_reqest_path(@user, @attendance), local: true, method: :patch) do |f| %>
+        <table class="table table-bordered">
+          <thead>
             <tr>
-              <td><%= @attendance.worked_on %></td>
-              <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
-              <td><%= time_select :test, class: 'test' %></td>
-              <td><%= check_box :test, id: "test" %></td>
-              <td><%= text_field :test, class: 'test' %></td>
-              <td>
-                <select>
-                  <option value="3"></option>
-                  <option value="3">上長A</option>
-                  <option value="3">上長B</option>
-                </select>
-              </td>
+              <th>日付</th>
+              <th>曜日</th>
+              <th>終了予定時間</th>
+              <th>翌日</th>
+              <th>業務処理内容</th>
+              <th>指示者確認印</th>
             </tr>
-        </tbody>
-        <tr>
-        </tr>
-      </table>
+          </thead>
+          <tbody>
+            <%= f.fields_for :attendances do |attendance| %>
+              <tr>
+                <td><%= @attendance.worked_on %></td>
+                <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
+                <td><%= f.time_select :scheduled_end_time, class: 'form-control' %></td>
+                <td><%= check_box :test, id: "test" %></td>
+                <td><%= text_field :test, class: 'test' %></td>
+                <td>
+                  <select>
+                    <option value="3"></option>
+                    <option value="3">上長A</option>
+                    <option value="3">上長B</option>
+                  </select>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+          <%= f.submit "送信する", class: "btn-btn-primary btn-block" %>
+      <% end %>
     </div>
   </div>
 </div>

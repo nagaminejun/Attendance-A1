@@ -93,11 +93,11 @@
             <% end %>
           </td>
           <td><%= day.note %></td>
+          <td><%= l(day.scheduled_end_time, format: :hour) %></td>
           <td></td>
           <td></td>
           <td></td>
           <td></td>
-          <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td>
         </tr>
       <% end %>
     </tbody>
