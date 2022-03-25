@@ -14,4 +14,9 @@ module AttendancesHelper
   def working_times(start, finish)
     format("%.2f", (((finish - start) / 60) / 60.0))
   end
+  
+  def working_overtime(scheduled_end_time, designated_work_end_time)
+    format("%.2f", (((scheduled_end_time - designated_work_end_time) / 60) / 60.0) - 9 )
+  end
+  
 end

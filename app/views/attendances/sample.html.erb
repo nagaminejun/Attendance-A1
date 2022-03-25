@@ -9,7 +9,7 @@
       <h1 class="modal-title">残業申請のサンプル</h1>
     </div>
     <div class="modal-body">
-      <%= form_with(model: @attendance, url: user_attendance_sample_update_overwork_reqest_path(@user, @attendance), local: true, method: :patch) do |f| %>
+      <%= form_with(model: [@user, @attendance], url: user_attendance_sample_update_overwork_reqest_path(@user, @attendance), local: true, method: :patch) do |f| %>
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -28,7 +28,7 @@
                 <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
                 <td><%= f.time_select :scheduled_end_time, class: 'form-control' %></td>
                 <td><%= check_box :test, id: "test" %></td>
-                <td><%= text_field :test, class: 'test' %></td>
+                <td><%= f.text_field :work_description, class: 'form-control' %></td>
                 <td>
                   <select>
                     <option value="3"></option>

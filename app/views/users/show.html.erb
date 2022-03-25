@@ -93,11 +93,15 @@
             <% end %>
           </td>
           <td><%= day.note %></td>
-          <td><%= l(day.scheduled_end_time, format: :hour) %></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td><%= l(day.scheduled_end_time, format: :hour) if day.scheduled_end_time.present? %></td>
+          <td><%= l(day.scheduled_end_time, format: :minute) if day.scheduled_end_time.present? %></td>
+          <td>
+            <% if @user.designated_work_end_time.present? && day.scheduled_end_time.present? %>
+              <%= working_overtime(day.scheduled_end_time, @user.designated_work_end_time) %>
+            <% end %>
+          </td>
+          <td><%= day.work_description %></td>
+          <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td>
         </tr>
       <% end %>
     </tbody>
