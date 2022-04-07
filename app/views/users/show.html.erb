@@ -26,7 +26,7 @@
 </div>
 
 <div class="btn-users-show">
-  <% if current_user.admin? %>
+  <% if current_user.superior? %>
   <a>【所属長承認申請のお知らせ】件のお知らせがあります</a>
   <br>
   <a>【勤怠変更申請のお知らせ】件のお知らせがあります</a>
@@ -88,20 +88,20 @@
           <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
-              <%= str_times = working_times(day.started_at, day.finished_at) %>
-              <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
+              <%= working_times(day.started_at, day.finished_at, day.next_day) %>
             <% end %>
           </td>
           <td><%= day.note %></td>
           <td><%= l(day.scheduled_end_time, format: :hour) if day.scheduled_end_time.present? %></td>
           <td><%= l(day.scheduled_end_time, format: :minute) if day.scheduled_end_time.present? %></td>
           <td>
-            <% if @user.designated_work_end_time.present? && day.scheduled_end_time.present? %>
-              <%= working_overtime(day.scheduled_end_time, @user.designated_work_end_time) %>
+            <% if day.scheduled_end_time.present? %>
+              <%= working_overtime(day.scheduled_end_time, @user.designated_work_end_time, day.next_day) %>
             <% end %>
           </td>
           <td><%= day.work_description %></td>
-          <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td>
+          <td></td>
+          <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td><!--あとでこのタブ消して-->
         </tr>
       <% end %>
     </tbody>
@@ -122,7 +122,7 @@
               <option value="3">上長B</option>
           </select>
           <br>
-          <%= link_to "申請", '#', class: "btn btn-md btn-primary btn-block btn-approval" %>
+          
           </td>
       </tr>
     </tfoot>    

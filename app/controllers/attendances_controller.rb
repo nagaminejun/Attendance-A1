@@ -80,7 +80,6 @@ class AttendancesController < ApplicationController
     else
       flash[:danger] = "残業申請をキャンセルしました。"
     end
-    
     redirect_to @user
   end
   
@@ -109,7 +108,7 @@ class AttendancesController < ApplicationController
     
     def overwork_params
       
-      params.require(:attendance).permit(:scheduled_end_time, :work_description)
+      params.require(:attendance).permit(:scheduled_end_time, :work_description, :next_day)
     end
 
     # beforeフィルター

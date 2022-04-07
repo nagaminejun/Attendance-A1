@@ -13,14 +13,16 @@ User.create!(name: "上長A",
              employee_number: 2,
              password: "password",
              password_confirmation: "password",
-             department: "総務")
+             department: "総務",
+             superior: true)
 
 User.create!(name: "上長B",
              email: "sampleB@email.com",
              employee_number: 3,
              password: "password",
              password_confirmation: "password",
-             department: "総務")
+             department: "総務",
+             superior: true)
 
  7.times do |n|
   name  = Faker::Name.name

@@ -27,15 +27,21 @@
               <% else %>
                 <td><%= attendance.time_field :started_at, class: "form-control" %></td>
                 <td><%= attendance.time_field :finished_at, class: "form-control" %></td>
-                <td></td>
+                <td><%= attendance.check_box :next_day, id: "test" %></td>
               <% end %>
               <td>
                 <% if day.started_at.present? && day.finished_at.present? %>
-                  <%= working_times(day.started_at, day.finished_at) %>
+                  <%= working_times(day.started_at, day.finished_at, day.next_day) %>
                 <% end %>
               </td>
               <td><%= attendance.text_field :note, class: "form-control" %></td>
-              <td></td>
+              <td>
+                <select>
+                  <option value=""></option>
+                    <option value="3">上長A</option>
+                    <option value="3">上長B</option>
+                </select>
+              </td>
             </tr>
           <% end %>
         <% end %>
