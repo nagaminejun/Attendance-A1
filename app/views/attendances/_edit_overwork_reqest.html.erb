@@ -32,8 +32,14 @@
                 <td>
                   <select>
                     <option value="3"></option>
-                    <option value="3">上長A</option>
-                    <option value="3">上長B</option>
+                    <% if @user.id == 2 %>
+                      <option value="3">上長B</option>
+                    <% elsif @user.id == 3 %>
+                      <option value="3">上長A</option>
+                    <% else %>
+                      <option value="3">上長A</option>
+                      <option value="3">上長B</option>
+                    <% end %>
                   </select>
                 </td>
               </tr>

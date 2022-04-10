@@ -21,14 +21,14 @@
             <tr>
               <td><%= l(day.worked_on, format: :short) %></td>
               <td><%= $days_of_the_week[day.worked_on.wday] %></td>
-              <% if !current_user.admin? && (Date.current < day.worked_on) %>
-                <td><%= attendance.time_field :started_at, readonly: true, class: "form-control" %></td>
-                <td><%= attendance.time_field :finished_at, readonly: true, class: "form-control" %></td>
-              <% else %>
-                <td><%= attendance.time_field :started_at, class: "form-control" %></td>
-                <td><%= attendance.time_field :finished_at, class: "form-control" %></td>
-                <td><%= attendance.check_box :next_day, id: "test" %></td>
-              <% end %>
+                <% if !current_user.admin? && (Date.current < day.worked_on) %>
+                  <td><%= attendance.time_field :started_at, readonly: true, class: "form-control" %></td>
+                  <td><%= attendance.time_field :finished_at, readonly: true, class: "form-control" %></td>
+                <% else %>
+                  <td><%= attendance.time_field :started_at, class: "form-control" %></td>
+                  <td><%= attendance.time_field :finished_at, class: "form-control" %></td>
+                <% end %>
+              <td><%= attendance.check_box :next_day, id: "test" %></td>
               <td>
                 <% if day.started_at.present? && day.finished_at.present? %>
                   <%= working_times(day.started_at, day.finished_at, day.next_day) %>
@@ -38,8 +38,14 @@
               <td>
                 <select>
                   <option value=""></option>
-                    <option value="3">上長A</option>
-                    <option value="3">上長B</option>
+                    <% if @user.id == 2 %>
+                      <option value="3">上長B</option>
+                    <% elsif @user.id == 3 %>
+                      <option value="3">上長A</option>
+                    <% else %>
+                      <option value="3">上長A</option>
+                      <option value="3">上長B</option>
+                    <% end %>
                 </select>
               </td>
             </tr>
