@@ -30,17 +30,7 @@
                 <td><%= f.check_box :next_day, id: "test" %></td>
                 <td><%= f.text_field :work_description, class: 'form-control' %></td>
                 <td>
-                  <select>
-                    <option value="3"></option>
-                    <% if @user.id == 2 %>
-                      <option value="3">上長B</option>
-                    <% elsif @user.id == 3 %>
-                      <option value="3">上長A</option>
-                    <% else %>
-                      <option value="3">上長A</option>
-                      <option value="3">上長B</option>
-                    <% end %>
-                  </select>
+                  <%= f.collection_select(:edit_overwork_reqest, @superiors, :id, :name, { include_blank: "選択してください" }, :required => true) %>
                 </td>
               </tr>
             <% end %>

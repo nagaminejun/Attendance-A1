@@ -70,6 +70,7 @@ class AttendancesController < ApplicationController
   def edit_overwork_reqest
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:attendance_id])
+    @superiors = User.where(superior: true)
   end
   
   def update_overwork_reqest
@@ -86,6 +87,7 @@ class AttendancesController < ApplicationController
   def sample
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:attendance_id])
+    @superiors = User.where(superior: true)
   end
   
   def sample_update_overwork_reqest
