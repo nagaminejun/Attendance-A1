@@ -27,4 +27,12 @@ module AttendancesHelper
     end
   end
   
+  def superiors(over_request_superior)
+    if over_request_superior == 2
+      User.find(2)
+    elsif over_request_superior == 3
+      User.find(3)
+    end
+  end
+  
 end

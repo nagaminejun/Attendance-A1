@@ -100,8 +100,12 @@
             <% end %>
           </td>
           <td><%= day.work_description %></td>
-          <td></td>
-          <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td><!--あとでこのタブ消して-->
+          <td>
+            <% if day.scheduled_end_time.present? %>
+              <%= superiors(day.over_request_superior).name %>
+            <% end %>
+          </td>
+          <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td><!--あとでこのタブ消す-->
         </tr>
       <% end %>
     </tbody>

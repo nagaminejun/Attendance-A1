@@ -101,6 +101,7 @@ class AttendancesController < ApplicationController
     redirect_to @user
   end
 
+
   private
 
     # 1ヶ月分の勤怠情報を扱います。
@@ -110,7 +111,7 @@ class AttendancesController < ApplicationController
     
     def overwork_params
       
-      params.require(:attendance).permit(:scheduled_end_time, :work_description, :next_day)
+      params.require(:attendance).permit(:scheduled_end_time, :work_description, :next_day, :over_request_superior)
     end
 
     # beforeフィルター
