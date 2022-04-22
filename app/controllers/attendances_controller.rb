@@ -70,12 +70,13 @@ class AttendancesController < ApplicationController
   def edit_overwork_reqest
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:attendance_id])
-    @superiors = User.where(superior: true)
+    @superiors = User.where(superior: true).where.not(id: @user.id)
   end
   
   def update_overwork_reqest
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:attendance_id])
+    params[:attendance][:over_request_status] = "申請中"
     if @attendance.update_attributes(overwork_params)
       flash[:info] = "残業申請をしました。"
     else
@@ -87,7 +88,7 @@ class AttendancesController < ApplicationController
   def sample
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:attendance_id])
-    @superiors = User.where(superior: true)
+    @superiors = User.where(superior: true).where.not(id: @user.id)
   end
   
   def sample_update_overwork_reqest
@@ -110,8 +111,7 @@ class AttendancesController < ApplicationController
     end
     
     def overwork_params
-      
-      params.require(:attendance).permit(:scheduled_end_time, :work_description, :next_day, :over_request_superior)
+      params.require(:attendance).permit(:scheduled_end_time, :work_description, :next_day, :over_request_superior, :over_request_status)
     end
 
     # beforeフィルター

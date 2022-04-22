@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(version: 20220416042612) do
     t.time "scheduled_end_time"
     t.string "next_day"
     t.integer "over_request_superior"
-    t.string "over_request_status", default: "なし"
+    t.string "over_request_status"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
@@ -45,8 +45,8 @@ ActiveRecord::Schema.define(version: 20220416042612) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2022-04-05 23:00:00"
-    t.datetime "work_time", default: "2022-04-05 22:30:00"
+    t.datetime "basic_time", default: "2022-04-19 23:00:00"
+    t.datetime "work_time", default: "2022-04-19 22:30:00"
     t.integer "employee_number"
     t.integer "uid"
     t.time "designated_work_start_time", default: "2000-01-01 00:00:00"

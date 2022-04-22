@@ -27,11 +27,11 @@
 
 <div class="btn-users-show">
   <% if current_user.superior? %>
-  <a>【所属長承認申請のお知らせ】件のお知らせがあります</a>
+  <a>【所属長承認申請のお知らせ】</a>
   <br>
-  <a>【勤怠変更申請のお知らせ】件のお知らせがあります</a>
+  <a>【勤怠変更申請のお知らせ】</a>
   <br>
-  <a>【残業申請のお知らせ】件のお知らせがあります</a>
+  <a>【残業申請のお知らせ】</a>
   <% end %>
   <br>
   <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
@@ -102,7 +102,7 @@
           <td><%= day.work_description %></td>
           <td>
             <% if day.scheduled_end_time.present? %>
-              <%= superiors(day.over_request_superior).name %>
+              <%= User.find(day.over_request_superior).name %><%= day.over_request_status %>
             <% end %>
           </td>
           <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td><!--あとでこのタブ消す-->

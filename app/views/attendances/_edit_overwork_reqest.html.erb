@@ -9,7 +9,7 @@
       <h1 class="modal-title">残業申請</h1>
     </div>
     <div class="modal-body">
-      <%= form_with(model: [@user, @attendance], url: user_attendance_update_overwork_reqest_path(@user, @attendance), local: true, method: :patch) do |f| %>
+      <%= form_with(model: @attendance, url: user_attendance_update_overwork_reqest_path(@user, @attendance), local: true, method: :patch) do |f| %>
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -22,16 +22,14 @@
             </tr>
           </thead>
           <tbody>
-            <%= f.fields_for :attendances do |attendance| %>
-              <tr>
-                <td><%= l(@attendance.worked_on, format: :short) %></td>
-                <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
-                <td><%= f.time_select :scheduled_end_time, class: 'form-control' %></td>
-                <td><%= f.check_box :next_day, id: "test" %></td>
-                <td><%= f.text_field :work_description, class: 'form-control' %></td>
-                <td><%= f.collection_select(:over_request_superior, @superiors, :id, :name, { include_blank: "選択してください" }, :required => true) %></td>
-              </tr>
-            <% end %>
+            <tr>
+              <td><%= l(@attendance.worked_on, format: :short) %></td>
+              <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
+              <td><%= f.time_field :scheduled_end_time, class: 'form-control' %></td>
+              <td><%= f.check_box :next_day, id: "test" %></td>
+              <td><%= f.text_field :work_description, class: 'form-control' %></td>
+              <td><%= f.collection_select(:over_request_superior, @superiors, :id, :name, { include_blank: "選択してください" }, :required => true) %></td>
+            </tr>
           </tbody>
         </table>
         <%= f.submit "送信する", class: "btn-btn-primary btn-block" %>
