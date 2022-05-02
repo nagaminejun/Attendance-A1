@@ -11,6 +11,8 @@ class UsersController < ApplicationController
 
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
+    @overwork_sum = Attendance.where(over_request_status: "申請中", over_request_superior: @user.id).count
+
   end
 
   def new

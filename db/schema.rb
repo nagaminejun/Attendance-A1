@@ -20,11 +20,11 @@ ActiveRecord::Schema.define(version: 20220416042612) do
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "work_description"
-    t.time "scheduled_end_time"
+    t.string "work_description" #業務処理内容
+    t.time "scheduled_end_time" #終業予定時間
     t.string "next_day"
-    t.integer "over_request_superior"
-    t.string "over_request_status"
+    t.integer "over_request_superior" #残業申請先の上長(idで選択)
+    t.string "over_request_status" # 残業申請の状態を作るカラム（なし、申請中、承認、否認を文字列で代入する）
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 

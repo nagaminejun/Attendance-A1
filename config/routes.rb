@@ -7,8 +7,8 @@ Rails.application.routes.draw do
   post   '/login', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
   
-  resources :bases do
-  end
+  resources :bases
+  
   resources :users do
     collection {post :import}
     
@@ -26,6 +26,10 @@ Rails.application.routes.draw do
       get 'sample'
       patch 'sample_update_overwork_reqest'
       patch 'update_overwork_reqest'
+      get 'sample_edit_overwork_notice'
+      collection do 
+        patch 'sample_edit_overwork_approval'
+      end
     end
   end
   

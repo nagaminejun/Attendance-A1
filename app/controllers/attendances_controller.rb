@@ -1,6 +1,6 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
-  before_action :logged_in_user, only: [:update, :edit_one_month, :sample, :sample_update_overwork_reqest]
+  before_action :logged_in_user, only: [:update, :edit_one_month, :edit_overwork_reqest, :update_overwork_reqest, :sample, :sample_update_overwork_reqest]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: [:edit_one_month]
 
@@ -94,11 +94,36 @@ class AttendancesController < ApplicationController
   def sample_update_overwork_reqest
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:attendance_id])
+    params[:attendance][:over_request_status] = "申請中"
     if @attendance.update_attributes(overwork_params)
       flash[:info] = "残業申請をしました。"
     else
       flash[:danger] = "残業申請をキャンセルしました。"
     end
+    redirect_to @user
+  end
+  
+  def sample_edit_overwork_notice
+    @user = User.find(params[:user_id])
+    @attendances = Attendance.where(over_request_status: "申請中", over_request_superior: @user.id).order(:worked_on).group_by(&:user_id)
+    #@users = User.joins(:attendances).where(attendances:{over_request_status: "申請中", over_request_superior: @user.id}).group(:user_id)
+    #モデル名.joins(:関連名).group(:).where(カラム名: 値)
+    #groupメソッドとは、指定したカラムのデータの種類ごとに、データをまとめることが出来るメソッドです。
+    #group_byメソッド,要素をグループ分けするためのメソッド、※引数に「&:」が必要！
+  end
+  
+  def sample_edit_overwork_approval
+    @user = User.find(params[:user_id])
+    ActiveRecord::Base.transaction do # トランザクションを開始します。
+      approval_overtime_params.each do |id, item|
+        attendance = Attendance.find(id)
+        attendance.update_attributes!(item)
+      end
+    end
+    flash[:success] = "残業申請を承認しました"
+    redirect_to @user
+  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
+    flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
     redirect_to @user
   end
 
@@ -112,6 +137,10 @@ class AttendancesController < ApplicationController
     
     def overwork_params
       params.require(:attendance).permit(:scheduled_end_time, :work_description, :next_day, :over_request_superior, :over_request_status)
+    end
+    
+    def approval_overtime_params
+      params.require(:user).permit(attendances: [:over_request_status])[:attendances]
     end
 
     # beforeフィルター

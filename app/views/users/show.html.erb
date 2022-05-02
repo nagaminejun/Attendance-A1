@@ -31,6 +31,8 @@
   <br>
   <a>【勤怠変更申請のお知らせ】</a>
   <br>
+  <%= link_to "【サンプル　残業申請のお知らせ】", user_attendance_sample_edit_overwork_notice_path(@user, @attendances) %>
+  <%= @overwork_sum %>件
   <a>【残業申請のお知らせ】</a>
   <% end %>
   <br>
@@ -102,7 +104,7 @@
           <td><%= day.work_description %></td>
           <td>
             <% if day.scheduled_end_time.present? %>
-              <%= User.find(day.over_request_superior).name %><%= day.over_request_status %>
+              <%= User.find(day.over_request_superior).name %>残業<%= day.over_request_status %>。
             <% end %>
           </td>
           <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td><!--あとでこのタブ消す-->
