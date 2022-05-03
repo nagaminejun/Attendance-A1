@@ -1,9 +1,9 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :basic_info_modification, :list_of_employees]
+  before_action :set_user, only: [:show, :show_confirmation, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :basic_info_modification, :list_of_employees]
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :list_of_employees]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :list_of_employees, :basic_info_modification, :import]
-  before_action :set_one_month, only: [:show]
+  before_action :set_one_month, only: [:show, :show_confirmation]
 
   def index
     @users = User.all
@@ -12,7 +12,10 @@ class UsersController < ApplicationController
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
     @overwork_sum = Attendance.where(over_request_status: "申請中", over_request_superior: @user.id).count
-
+  end
+  
+  def show_confirmation
+    @worked_sum = @attendances.where.not(started_at: nil).count
   end
 
   def new

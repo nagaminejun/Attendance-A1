@@ -3,9 +3,7 @@
   <table class="table table-bordered table-condensed user-table">
     <tr>
       <td>
-        <%= link_to "⇦", user_path(date: @first_day.prev_month), class: "btn btn-primary btn-left" %>
         【<%= l(@first_day, format: :middle) %>】勤怠管理表
-        <%= link_to "⇨", user_path(date: @first_day.next_month), class: "btn btn-primary btn-right" %>
         </td>
       <td>
         指定勤務開始時間：<%= format_basic_info(@user.designated_work_start_time) %>
@@ -26,20 +24,7 @@
 </div>
 
 <div class="btn-users-show">
-  <% if current_user.superior? %>
-    <a>【所属長承認申請のお知らせ】</a>
-    <br>
-    <a>【勤怠変更申請のお知らせ】</a>
-    <br>
-    <%= link_to "【サンプル　残業申請のお知らせ】", user_attendance_sample_edit_overwork_notice_path(@user, @attendances) %>
-    <%= @overwork_sum %>件
-    <a>【残業申請のお知らせ】</a><%= @overwork_sum %>件
-  <% end %>
-  <br>
-    <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
-    <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day, format: :csv), class: "btn btn-primary" %>
-  <br>
-  <%= link_to "勤怠修正ログ（承認済）", '#', class: "btn btn-primary" %>
+  <br><br>
 </div>
 <div>
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
@@ -76,16 +61,12 @@
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
-          <td><%= link_to "残業申請", user_attendance_edit_overwork_reqest_path(@user, day), remote: true, class: "btn btn-primary" %></td>
+          <td></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td><%= $days_of_the_week[day.worked_on.wday] %></td>
           <td><%= l(day.started_at, format: :hour) if day.started_at.present? %></td>
           <td><%= l(day.started_at, format: :minute) if day.started_at.present? %></td>
-          <td>
-            <% if btn_text = attendance_state(day) %>
-              <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
-            <% end %>
-          </td>
+          <td></td>
           <td><%= l(day.finished_at, format: :hour) if day.finished_at.present? %></td>
           <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
           <td>
@@ -107,7 +88,7 @@
               <%= User.find(day.over_request_superior).name %>残業<%= day.over_request_status %>。
             <% end %>
           </td>
-          <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td><!--あとでこのタブ消す-->
+          <td></td><!--あとでこのタブ消す-->
         </tr>
       <% end %>
     </tbody>
@@ -134,9 +115,7 @@
                 <option value="3">上長B</option>
             <% end %>
           </select>
-          <%= submit_tag "申請", class: "btn btn-md btn-primary btn-block btn-approval" %>
           <br>
-          
           </td>
       </tr>
     </tfoot>    

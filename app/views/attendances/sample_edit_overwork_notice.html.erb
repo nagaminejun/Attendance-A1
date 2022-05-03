@@ -8,7 +8,7 @@
       </div>
       <% @attendances.each do |id, attendances| %>
         <% user = User.find(id) %>
-        <h5 class="modal-title center">【<%= user.name %>】からの残業申請　サンプル</h5>
+        <h4 class="modal-title center">【<%= user.name %>】からの残業申請　サンプル</h4>
           <div class="modal-body">
             <table class="table table-bordered">
               <thead>
@@ -33,8 +33,8 @@
                       <td><%= working_overtime(day.scheduled_end_time, user.designated_work_end_time, day.next_day) %></td>
                       <td><%= day.work_description %></td>
                       <td><%= item.select :over_request_status, ['なし', '申請中', '承認', '否認'] %></td>
-                      <td><%= check_box '#', id: "test" %></td>
-                      <td><%= link_to "確認", '#', class: "btn btn-primary" %></td>
+                      <td><%= item.check_box :change, id: "test" %></td>
+                      <td><%= link_to "確認", show_confirmation_user_path(id), class: "btn btn-primary" %></td>
                     </tr>
                   </tbody>
                 <% end %>

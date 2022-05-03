@@ -117,7 +117,9 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       approval_overtime_params.each do |id, item|
         attendance = Attendance.find(id)
-        attendance.update_attributes!(item)
+        if item[:change] == "1"
+          attendance.update_attributes!(item)
+        end
       end
     end
     flash[:success] = "残業申請を承認しました"
@@ -140,7 +142,7 @@ class AttendancesController < ApplicationController
     end
     
     def approval_overtime_params
-      params.require(:user).permit(attendances: [:over_request_status])[:attendances]
+      params.require(:user).permit(attendances: [:over_request_status, :change])[:attendances]
     end
 
     # beforeフィルター

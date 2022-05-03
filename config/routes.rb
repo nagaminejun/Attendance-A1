@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       patch 'attendances/update_one_month' 
       get 'basic_info_modification'
       get 'list_of_employees'
+      get 'show_confirmation'
       
     end
     resources :attendances do
