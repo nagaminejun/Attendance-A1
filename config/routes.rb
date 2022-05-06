@@ -23,11 +23,12 @@ Rails.application.routes.draw do
       
     end
     resources :attendances do
-      get 'edit_overwork_reqest'
       get 'sample'
+      get 'edit_overwork_reqest'
+      get 'sample_edit_overwork_notice'
+      get 'edit_overwork_notice'
       patch 'sample_update_overwork_reqest'
       patch 'update_overwork_reqest'
-      get 'sample_edit_overwork_notice'
       collection do 
         patch 'sample_edit_overwork_approval'
       end

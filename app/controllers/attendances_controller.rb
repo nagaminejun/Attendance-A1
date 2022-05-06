@@ -1,6 +1,6 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
-  before_action :logged_in_user, only: [:update, :edit_one_month, :edit_overwork_reqest, :update_overwork_reqest, :sample, :sample_update_overwork_reqest]
+  before_action :logged_in_user, only: [:update, :edit_one_month, :edit_overwork_reqest, :update_overwork_reqest, :sample_update_overwork_reqest]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: [:edit_one_month]
 
@@ -110,6 +110,11 @@ class AttendancesController < ApplicationController
     #モデル名.joins(:関連名).group(:).where(カラム名: 値)
     #groupメソッドとは、指定したカラムのデータの種類ごとに、データをまとめることが出来るメソッドです。
     #group_byメソッド,要素をグループ分けするためのメソッド、※引数に「&:」が必要！
+  end
+  
+  def edit_overwork_notice
+    @user = User.find(params[:user_id])
+    @attendances = Attendance.where(over_request_status: "申請中", over_request_superior: @user.id).order(:worked_on).group_by(&:user_id)
   end
   
   def sample_edit_overwork_approval

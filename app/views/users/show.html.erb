@@ -30,10 +30,14 @@
     <a>【所属長承認申請のお知らせ】</a>
     <br>
     <a>【勤怠変更申請のお知らせ】</a>
-    <br>
-    <%= link_to "【サンプル　残業申請のお知らせ】", user_attendance_sample_edit_overwork_notice_path(@user, @attendances) %>
-    <%= @overwork_sum %>件
-    <a>【残業申請のお知らせ】</a><%= @overwork_sum %>件
+    <% if @overwork_reqest.present? %>
+      <br>
+      <%= link_to "【サンプル　残業申請のお知らせ】", user_attendance_sample_edit_overwork_notice_path(@user, @attendances) %><%= @overwork_sum %>件
+      <%= link_to "【残業申請のお知らせ】", user_attendance_edit_overwork_notice_path(@user, @attendances), remote: true %><%= @overwork_sum %>件
+    <% else %>
+      <br>
+      <a>【残業申請のお知らせ】</a>
+    <% end %>
   <% end %>
   <br>
     <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
@@ -42,6 +46,7 @@
   <%= link_to "勤怠修正ログ（承認済）", '#', class: "btn btn-primary" %>
 </div>
 <div>
+  
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>
       <tr>
@@ -121,23 +126,8 @@
         <td></td>
         <td colspan="4"></td>
         <td>
-          △△△△△△△△△△△
           
-          <select>
-            <option value="">選択してください</option>
-            <% if @user.id == 2 %>
-              <option value="3">上長B</option>
-              <% elsif @user.id == 3 %>
-                <option value="3">上長A</option>
-              <% else %>
-                <option value="3">上長A</option>
-                <option value="3">上長B</option>
-            <% end %>
-          </select>
-          <%= submit_tag "申請", class: "btn btn-md btn-primary btn-block btn-approval" %>
-          <br>
-          
-          </td>
+        </td>
       </tr>
     </tfoot>    
   </table>
@@ -145,5 +135,4 @@
 
 <!--モーダルウインドウ表示-->
 <div id="edit-overwork-reqest" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
-
-
+<div id="edit-overwork-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
