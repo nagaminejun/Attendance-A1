@@ -27,10 +27,13 @@ Rails.application.routes.draw do
       get 'edit_overwork_reqest'
       get 'sample_edit_overwork_notice'
       get 'edit_overwork_notice'
+      get 'sample_edit_day_notice'
+      get 'edit_day_notice'
       patch 'sample_update_overwork_reqest'
       patch 'update_overwork_reqest'
       collection do 
-        patch 'sample_edit_overwork_approval'
+        patch 'edit_overwork_approval'
+        patch 'edit_day_approval'
       end
     end
   end

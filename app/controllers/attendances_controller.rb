@@ -27,6 +27,7 @@ class AttendancesController < ApplicationController
   end
 
   def edit_one_month
+    @superiors = User.where(superior: true).where.not(id: @user.id)
      respond_to do |format|
       format.html
       format.csv do |csv|
@@ -39,6 +40,7 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
+        item[:edit_day_request_status] = "申請中"
         attendance.update_attributes!(item)
       end
     end
@@ -117,7 +119,7 @@ class AttendancesController < ApplicationController
     @attendances = Attendance.where(over_request_status: "申請中", over_request_superior: @user.id).order(:worked_on).group_by(&:user_id)
   end
   
-  def sample_edit_overwork_approval
+  def edit_overwork_approval
     @user = User.find(params[:user_id])
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       approval_overtime_params.each do |id, item|
@@ -127,7 +129,36 @@ class AttendancesController < ApplicationController
         end
       end
     end
-    flash[:success] = "残業申請を承認しました"
+    flash[:success] = "残業申請を送信しました"
+    redirect_to @user
+  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
+    flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+    redirect_to @user
+  end
+  
+  def sample_edit_day_notice
+    @user = User.find(params[:user_id])
+    @superiors = User.where(superior: true).where.not(id: @user.id)
+    @attendances = Attendance.where(edit_day_request_status: "申請中", edit_day_request_superior: @user.id).order(:worked_on).group_by(&:user_id)
+  end
+  
+  def edit_day_notice
+    @user = User.find(params[:user_id])
+    @superiors = User.where(superior: true).where.not(id: @user.id)
+    @attendances = Attendance.where(edit_day_request_status: "申請中", edit_day_request_superior: @user.id).order(:worked_on).group_by(&:user_id)
+  end
+  
+  def edit_day_approval
+    @user = User.find(params[:user_id])
+    ActiveRecord::Base.transaction do # トランザクションを開始します。
+      approval_edit_day_params.each do |id, item|
+        attendance = Attendance.find(id)
+        if item[:edit_day_check_confirm] == "1"
+          attendance.update_attributes!(item)
+        end
+      end
+    end
+    flash[:success] = "勤怠編集申請を送信しました"
     redirect_to @user
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
@@ -139,7 +170,7 @@ class AttendancesController < ApplicationController
 
     # 1ヶ月分の勤怠情報を扱います。
     def attendances_params
-      params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+      params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :edit_day_request_superior, :edit_day_request_status])[:attendances]
     end
     
     def overwork_params
@@ -149,6 +180,11 @@ class AttendancesController < ApplicationController
     def approval_overtime_params
       params.require(:user).permit(attendances: [:over_request_status, :change])[:attendances]
     end
+    
+    def approval_edit_day_params
+      params.require(:user).permit(attendances: [:edit_day_request_status, :edit_day_check_confirm])[:attendances]
+    end
+    
 
     # beforeフィルター
 

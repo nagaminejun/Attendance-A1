@@ -29,11 +29,16 @@
   <% if current_user.superior? %>
     <a>【所属長承認申請のお知らせ】</a>
     <br>
-    <a>【勤怠変更申請のお知らせ】</a>
+    <% if @edit_day_reqest.present? %>
+      <%= link_to "【サンプル　勤怠変更のお知らせ】", user_attendance_sample_edit_day_notice_path(@user, @attendances) %><%= @edit_day_reqest.count %>件
+      <%= link_to "【勤怠変更のお知らせ】", user_attendance_edit_day_notice_path(@user, @attendances), remote: true %><%= @edit_day_reqest.count %>件
+    <% else %>
+      <a>【勤怠変更申請のお知らせ】</a>
+    <% end %>
     <% if @overwork_reqest.present? %>
       <br>
-      <%= link_to "【サンプル　残業申請のお知らせ】", user_attendance_sample_edit_overwork_notice_path(@user, @attendances) %><%= @overwork_sum %>件
-      <%= link_to "【残業申請のお知らせ】", user_attendance_edit_overwork_notice_path(@user, @attendances), remote: true %><%= @overwork_sum %>件
+      <%= link_to "【サンプル　残業申請のお知らせ】", user_attendance_sample_edit_overwork_notice_path(@user, @attendances) %><%= @overwork_reqest.count %>件
+      <%= link_to "【残業申請のお知らせ】", user_attendance_edit_overwork_notice_path(@user, @attendances), remote: true %><%= @overwork_reqest.count %>件
     <% else %>
       <br>
       <a>【残業申請のお知らせ】</a>
@@ -111,6 +116,9 @@
             <% if day.scheduled_end_time.present? %>
               <%= User.find(day.over_request_superior).name %>残業<%= day.over_request_status %>。
             <% end %>
+            <% if day.edit_day_request_superior.present? %>
+              <%= User.find(day.edit_day_request_superior).name %>勤怠変更<%= day.edit_day_request_status %>。
+            <% end %>
           </td>
           <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td><!--あとでこのタブ消す-->
         </tr>
@@ -136,3 +144,4 @@
 <!--モーダルウインドウ表示-->
 <div id="edit-overwork-reqest" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-overwork-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-day-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

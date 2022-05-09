@@ -36,17 +36,7 @@
               </td>
               <td><%= attendance.text_field :note, class: "form-control" %></td>
               <td>
-                <select>
-                  <option value=""></option>
-                    <% if @user.id == 2 %>
-                      <option value="3">上長B</option>
-                    <% elsif @user.id == 3 %>
-                      <option value="3">上長A</option>
-                    <% else %>
-                      <option value="3">上長A</option>
-                      <option value="3">上長B</option>
-                    <% end %>
-                </select>
+                <%= attendance.collection_select(:edit_day_request_superior, @superiors, :id, :name, { include_blank: "選択してください" }) %>
               </td>
             </tr>
           <% end %>

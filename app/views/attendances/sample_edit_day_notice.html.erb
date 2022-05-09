@@ -1,0 +1,72 @@
+<%= form_with(model: @user, url: edit_day_approval_user_attendances_path(@user), local: true, method: :patch) do |f| %>
+  <div class="modal-dialog modal-lg modal-dialog-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <% @attendances.each do |id, attendances| %>
+        <% user = User.find(id) %>
+        <h4 class="modal-title center">【<%= user.name %>】からの勤怠変更申請　サンプル</h4>
+          <div class="modal-body">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th rowspan="3">日付</th>
+                  <th rowspan="3">曜日</th>
+                  <th colspan="4">変更前</th>
+                  <th colspan="4">変更後</th>
+                  <th rowspan="3">備考</th>
+                  <th rowspan="3">指示者確認印</th>
+                  <th rowspan="3">変更</th>
+                  <th rowspan="3">勤怠を確認する</th>
+                </tr>
+                <tr>
+                  <th colspan="2">出社</th>
+                  <th colspan="2">退社</th>
+                  <th colspan="2">出社</th>
+                  <th colspan="2">退社</th>
+                </tr>
+                <tr>
+                  <th>時</th>
+                  <th>分</th>
+                  <th>時</th>
+                  <th>分</th>
+                  <th>時</th>
+                  <th>分</th>
+                  <th>時</th>
+                  <th>分</th>
+                </tr>
+              </thead>
+              <% attendances.each do |day| %>
+                <%= f.fields_for "attendances[]", day do |item| %>
+                  <tbody>
+                    <tr>
+                      <td><%= l(day.worked_on, format: :short) %></td>
+                      <td><%= $days_of_the_week[day.worked_on.wday] %></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td><%= l(day.started_at, format: :hour) %></td>
+                      <td><%= l(day.started_at, format: :minute) %></td>
+                      <td><%= l(day.finished_at, format: :hour) %></td>
+                      <td><%= l(day.finished_at, format: :minute) %></td>
+                      <td><%= day.work_description %></td>
+                      <td><%= item.select :edit_day_request_status, ['なし', '申請中', '承認', '否認'] %></td>
+                      <td><%= item.check_box :edit_day_check_confirm, id: "test" %></td>
+                      <td><%= link_to "確認", show_confirmation_user_path(id), target: :_blank, class: "btn btn-primary" %></td>
+                    </tr>
+                  </tbody>
+                <% end %>
+              <% end %>
+            </table>
+          </div>
+        <% end %>
+      <div class= center>
+        <%= submit_tag "変更を送信する" %>
+      </div>
+    </div>
+  </div>
+<% end %>
