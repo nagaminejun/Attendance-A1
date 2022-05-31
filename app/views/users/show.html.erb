@@ -27,20 +27,24 @@
 
 <div class="btn-users-show">
   <% if current_user.superior? %>
-    <a>【所属長承認申請のお知らせ】</a>
+     <% if @edit_monthly_request.present? %>
+      <!-- link_to "【サンプル　所属長承認申請のお知らせ】", user_attendance_sample_edit_one_month_notice_path(@user, @attendances) %> -->
+      <%= link_to "【所属長承認申請のお知らせ】", user_attendance_edit_one_month_notice_path(@user, @attendances), remote: true, class: "text text-danger" %><%= @edit_monthly_request.count %>件
+    <% else %>
+      <a>【所属長承認申請のお知らせ】</a>
+    <% end %>
     <br>
     <% if @edit_day_reqest.present? %>
-      <%= link_to "【サンプル　勤怠変更のお知らせ】", user_attendance_sample_edit_day_notice_path(@user, @attendances) %><%= @edit_day_reqest.count %>件
-      <%= link_to "【勤怠変更のお知らせ】", user_attendance_edit_day_notice_path(@user, @attendances), remote: true %><%= @edit_day_reqest.count %>件
+      <%= link_to "【サンプル　勤怠変更のお知らせ】", user_attendance_sample_edit_day_notice_path(@user, @attendances) %> 
+      <%= link_to "【勤怠変更のお知らせ】", user_attendance_edit_day_notice_path(@user, @attendances), remote: true, class: "text text-danger" %><%= @edit_day_reqest.count %>件
     <% else %>
       <a>【勤怠変更申請のお知らせ】</a>
     <% end %>
+    <br>
     <% if @overwork_reqest.present? %>
-      <br>
-      <%= link_to "【サンプル　残業申請のお知らせ】", user_attendance_sample_edit_overwork_notice_path(@user, @attendances) %><%= @overwork_reqest.count %>件
-      <%= link_to "【残業申請のお知らせ】", user_attendance_edit_overwork_notice_path(@user, @attendances), remote: true %><%= @overwork_reqest.count %>件
+      <!-- link_to "【サンプル　残業申請のお知らせ】", user_attendance_sample_edit_overwork_notice_path(@user, @attendances) %> -->
+      <%= link_to "【残業申請のお知らせ】", user_attendance_edit_overwork_notice_path(@user, @attendances), remote: true, class: "text text-danger" %><%= @overwork_reqest.count %>件
     <% else %>
-      <br>
       <a>【残業申請のお知らせ】</a>
     <% end %>
   <% end %>
@@ -48,10 +52,9 @@
     <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
     <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day, format: :csv), class: "btn btn-primary" %>
   <br>
-  <%= link_to "勤怠修正ログ（承認済）", '#', class: "btn btn-primary" %>
+  <%= link_to "勤怠修正ログ（承認済）", attendances_log_user_path, remote: true, class: "btn btn-primary" %> <%= link_to "サンプル　勤怠修正ログ（承認済）", attendances_sample_log_user_path, class: "btn btn-primary" %>
 </div>
 <div>
-  
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
     <thead>
       <tr>
@@ -82,22 +85,31 @@
         <th>分</th>
       </tr>
     </thead>
-
-    <tbody>
-      <% @attendances.each do |day| %>
+    <% @attendances.each do |day| %>
+      <tbody>
         <tr>
           <td><%= link_to "残業申請", user_attendance_edit_overwork_reqest_path(@user, day), remote: true, class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td><%= $days_of_the_week[day.worked_on.wday] %></td>
-          <td><%= l(day.started_at, format: :hour) if day.started_at.present? %></td>
-          <td><%= l(day.started_at, format: :minute) if day.started_at.present? %></td>
+          <% if day. edit_day_started_at.present? && day.edit_day_request_status == "承認" %>
+            <td><%= l(day.edit_day_started_at, format: :hour) %></td>
+            <td><%= l(day.edit_day_started_at, format: :minute) %></td>
+          <% else %>
+            <td><%= l(day.started_at, format: :hour) if day.started_at.present? %></td>
+            <td><%= l(day.started_at, format: :minute) if day.started_at.present? %></td>
+          <% end %>
           <td>
             <% if btn_text = attendance_state(day) %>
               <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
             <% end %>
           </td>
-          <td><%= l(day.finished_at, format: :hour) if day.finished_at.present? %></td>
-          <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
+          <% if day. edit_day_finished_at.present? && day.edit_day_request_status == "承認" %>
+            <td><%= l(day.edit_day_finished_at, format: :hour) %></td>
+            <td><%= l(day.edit_day_finished_at, format: :minute) %></td>
+          <% else %>
+            <td><%= l(day.finished_at, format: :hour) if day.finished_at.present? %></td>
+            <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
+          <% end %>
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
               <%= working_times(day.started_at, day.finished_at, day.next_day) %>
@@ -114,30 +126,39 @@
           <td><%= day.work_description %></td>
           <td>
             <% if day.scheduled_end_time.present? %>
-              <%= User.find(day.over_request_superior).name %>残業<%= day.over_request_status %>。
+              <%= superiors(day.over_request_superior).name %>残業<%= day.over_request_status %>。
             <% end %>
+            <br>
             <% if day.edit_day_request_superior.present? %>
               <%= User.find(day.edit_day_request_superior).name %>勤怠変更<%= day.edit_day_request_status %>。
             <% end %>
           </td>
-          <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td><!--あとでこのタブ消す-->
+          <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td> <!--あとでこのタブ消す-->
         </tr>
-      <% end %>
-    </tbody>
-
-    <tfoot>
-      <!--rowspan:縦結合、colspan：横結合-->
-      <tr>
-        <td></td>
-        <td colspan="2"></td>
-        <td colspan="6"></td>
-        <td></td>
-        <td colspan="4"></td>
-        <td>
-          
-        </td>
-      </tr>
-    </tfoot>    
+      </tbody>
+    <% end %>
+  　<!--rowspan:縦結合、colspan：横結合-->
+    <tr>
+      
+      <td></td>
+      <td colspan="2"></td>
+      <td colspan="6"></td>
+      <td></td>
+      <td colspan="4"></td>
+      <td>
+        
+        <% if @apply.edit_one_month_request_superior.present? %>
+          <%= User.find(@apply.edit_one_month_request_superior).name %><%= @apply.edit_one_month_request_status %>
+        <% end %>
+        <br>
+        <%= form_with(model: @attendance, url: attendances_edit_monthly_request_user_path(date: @first_day), local: true, method: :patch) do |f| %>
+          <%= f.collection_select(:edit_one_month_request_superior, @superiors, :id, :name, { include_blank: "選択してください" }, :required => true) %>
+        <br>
+        <%= f.submit "変更を送信する", class: "btn btn-primary" %>
+        <% end %>
+      </td>
+      
+    </tr>
   </table>
 </div>
 
@@ -145,3 +166,5 @@
 <div id="edit-overwork-reqest" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-overwork-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-day-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-one-month-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="log" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

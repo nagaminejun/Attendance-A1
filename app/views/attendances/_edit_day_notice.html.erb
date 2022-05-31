@@ -49,10 +49,10 @@
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td><%= l(day.started_at, format: :hour) %></td>
-                      <td><%= l(day.started_at, format: :minute) %></td>
-                      <td><%= l(day.finished_at, format: :hour) %></td>
-                      <td><%= l(day.finished_at, format: :minute) %></td>
+                      <td><%= l(day.edit_day_started_at, format: :hour) %></td>
+                      <td><%= l(day.edit_day_started_at, format: :minute) %></td>
+                      <td><%= l(day.edit_day_finished_at, format: :hour) %></td>
+                      <td><%= l(day.edit_day_finished_at, format: :minute) %></td>
                       <td><%= day.work_description %></td>
                       <td><%= item.select :edit_day_request_status, ['なし', '申請中', '承認', '否認'] %></td>
                       <td><%= item.check_box :edit_day_check_confirm, id: "test" %></td>

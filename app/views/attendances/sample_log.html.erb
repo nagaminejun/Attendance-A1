@@ -1,0 +1,29 @@
+<div>
+  <h1>サンプル勤怠ログ</h1>
+  <table class="table table-bordered table-condensed table-hover" id="table-attendances">
+    <thead>
+      <tr>
+        <th>日付</th>
+        <th>変更前出社時間</th>
+        <th>変更前退社時間</th>
+        <th>変更後出社時間</th>
+        <th>変更後退社時間</th>
+        <th>承認者</th>
+        <th>承認日</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @attendances.each do |day| %>
+        <tr>
+          <td><%= l(day.worked_on, format: :short) %></td>
+          <td><%= l(day.started_at, format: :time) if day.started_at.present? %></td>
+          <td><%= l(day.finished_at, format: :time) if day.finished_at.present? %></td>
+          <td><%= l(day.edit_day_started_at, format: :time) %></td>
+          <td><%= l(day.edit_day_finished_at, format: :time) %></td>
+          <td><%= User.find(day.edit_day_request_superior).name %></td>
+          <td><%= l(day.updated_at, format: :time) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

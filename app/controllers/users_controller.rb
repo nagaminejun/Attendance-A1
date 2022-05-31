@@ -12,9 +12,12 @@ class UsersController < ApplicationController
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
     @overwork_reqest = Attendance.where(over_request_status: "申請中", over_request_superior: @user.id)
-    #@overwork_sum = Attendance.where(over_request_status: "申請中", over_request_superior: @user.id).count
     @edit_day_reqest = Attendance.where(edit_day_request_status: "申請中", edit_day_request_superior: @user.id)
+    @edit_monthly_request = Attendance.where(edit_one_month_request_status: "申請中", edit_one_month_request_superior: @user.id)
+    #@overwork_sum = Attendance.where(over_request_status: "申請中", over_request_superior: @user.id).count
     #@edit_day_sum = Attendance.where(edit_day_request_status: "申請中", edit_day_request_superior: @user.id).count
+    @superiors = User.where(superior: true).where.not(id: @user.id)
+    @apply = @user.attendances.find_by(worked_on: @first_day)
   end
   
   def show_confirmation
