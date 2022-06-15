@@ -28,7 +28,7 @@
               <td><%= l(day.edit_day_started_at, format: :time) %></td>
               <td><%= l(day.edit_day_finished_at, format: :time) %></td>
               <td><%= User.find(day.edit_day_request_superior).name %></td>
-              <td><%= l(day.updated_at, format: :time) %></td>
+              <td><%= l(day.updated_at, format: :middle) %></td>
             </tr>
           <% end %>
         </tbody>

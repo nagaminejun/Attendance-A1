@@ -209,8 +209,10 @@ class AttendancesController < ApplicationController
   end
   
   def sample_log
-    @user = User.find(params[:id])
-    @attendances = Attendance.where(edit_day_request_status: "承認").order(:worked_on)
+    @user = User.find(params[:id]) #これ無くても機能出来た
+    #@search = Attendance.where(edit_day_request_status: "承認").order(:worked_on).ransack(params[:q]) これでも出来る
+    @search = @user.attendances.where(edit_day_request_status: "承認").order(:worked_on).ransack(params[:q]) #矢木さんに教えてもらったコード
+    @attendances = @search.result
   end
   
   def log
@@ -218,6 +220,16 @@ class AttendancesController < ApplicationController
     @attendances = Attendance.where(edit_day_request_status: "承認").order(:worked_on)
   end
   
+  def search_log
+    @user = User.find(params[:id])
+    @attendances = Attendance.where(edit_day_request_status: "承認").order(:worked_on)
+    @search = Attendance.ransack(params[:q])
+    # 検索オブジェクト
+    #@search = Attendance.where(edit_day_request_status: "承認").order(:worked_on)
+    # 検索結果
+    @result = @search.result
+  end
+    
 
 
   private

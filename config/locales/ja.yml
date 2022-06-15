@@ -203,6 +203,7 @@ ja:
     formats:
       default: "%Y年%m月%d日(%a) %H時%M分%S秒 %z"
       long: "%Y/%m/%d %H:%M"
+      middle: "%Y年%m月%d日"
       short: "%m/%d %H:%M"
       hour: "%H"
       minute: "%M"

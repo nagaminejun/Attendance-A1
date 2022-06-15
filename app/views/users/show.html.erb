@@ -53,6 +53,7 @@
     <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day, format: :csv), class: "btn btn-primary" %>
   <br>
   <%= link_to "勤怠修正ログ（承認済）", attendances_log_user_path, remote: true, class: "btn btn-primary" %> <%= link_to "サンプル　勤怠修正ログ（承認済）", attendances_sample_log_user_path, class: "btn btn-primary" %>
+  <%= link_to "サンプル2　勤怠修正ログ（承認済）", attendances_search_log_user_path, class: "btn btn-primary" %>
 </div>
 <div>
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">

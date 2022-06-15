@@ -29,7 +29,6 @@
               <td><%= f.check_box :next_day, id: "test" %></td>
               <td><%= f.text_field :work_description, class: 'form-control' %></td>
               <td><%= f.collection_select(:over_request_superior, @superiors, :id, :name, { include_blank: "選択してください" }, :required => true) %></td>
-              <td><%= f.datetime_select :'#' %></td>
             </tr>
           </tbody>
         </table>
