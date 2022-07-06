@@ -70,8 +70,10 @@
           <td><%= l(day.finished_at, format: :hour) if day.finished_at.present? %></td>
           <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
           <td>
-            <% if day.started_at.present? && day.finished_at.present? %>
-              <%= working_times(day.started_at, day.finished_at, day.next_day) %>
+            <% if day.finished_at.present? && day.edit_day_finished_at.nil? %>
+              <%= working_times(day.started_at, day.finished_at) %>
+            <% elsif day.edit_day_finished_at.present? && day.edit_day_request_status == "承認" %>
+              <%= edit_working_times(day.edit_day_started_at, day.edit_day_finished_at, day.next_day) %>
             <% end %>
           </td>
           <td><%= day.note %></td>
@@ -88,7 +90,6 @@
               <%= User.find(day.over_request_superior).name %>残業<%= day.over_request_status %>。
             <% end %>
           </td>
-          <td></td><!--あとでこのタブ消す-->
         </tr>
       <% end %>
     </tbody>
@@ -102,21 +103,10 @@
         <td></td>
         <td colspan="4"></td>
         <td>
-          △△△△△△△△△△△
-          
-          <select>
-            <option value="">選択してください</option>
-            <% if @user.id == 2 %>
-              <option value="3">上長B</option>
-              <% elsif @user.id == 3 %>
-                <option value="3">上長A</option>
-              <% else %>
-                <option value="3">上長A</option>
-                <option value="3">上長B</option>
-            <% end %>
-          </select>
-          <br>
-          </td>
+          <% if @apply.edit_one_month_request_superior.present? %>
+            <%= User.find(@apply.edit_one_month_request_superior).name %><%= @apply.edit_one_month_request_status %>
+          <% end %>
+        </td>
       </tr>
     </tfoot>    
   </table>

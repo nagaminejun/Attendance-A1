@@ -29,6 +29,13 @@ class ApplicationController < ActionController::Base
   def admin_user
     redirect_to root_url unless current_user.admin?
   end
+  
+  # 管理者自身の勤怠表示、編集ができないようにする。
+  def admin_not
+    if current_user.admin?
+      redirect_to root_url
+    end
+  end
 
   # ページ出力前に1ヶ月分のデータの存在を確認・セットします。
   def set_one_month 

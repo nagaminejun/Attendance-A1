@@ -18,7 +18,6 @@ Rails.application.routes.draw do
       get 'attendances/edit_one_month'
       get 'attendances/sample_log'
       get 'attendances/log'
-      get 'attendances/search_log'
       patch 'attendances/update_one_month' 
       patch 'attendances/edit_monthly_request'
       get 'basic_info_modification'

@@ -7,6 +7,14 @@
       <h1 class="modal-title">勤怠ログ</h1>
     </div>
     <div class="modal-body">
+      <%= search_form_for @search, url: attendances_log_user_path, local: true do |f| %>
+        <%= f.date_field :updated_at_gteq %>
+        <span>~</span>
+        <%= f.date_field :updated_at_lteq_end_of_day %>
+        <%= f.submit "検索", class: 'btn btn-primary' %>
+      <%end%>
+      <%= link_to "リセット", attendances_log_user_path, class: "btn btn-info" %>
+      
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -23,10 +31,10 @@
           <% @attendances.each do |day| %>
             <tr>
               <td><%= l(day.worked_on, format: :short) %></td>
-              <td><%= l(day.started_at, format: :time) if day.started_at.present? %></td>
-              <td><%= l(day.finished_at, format: :time) if day.finished_at.present? %></td>
-              <td><%= l(day.edit_day_started_at, format: :time) %></td>
-              <td><%= l(day.edit_day_finished_at, format: :time) %></td>
+              <td><%= l(day.edit_day_started_at, format: :time) if day.edit_day_started_at.present? %></td>
+              <td><%= l(day.edit_day_finished_at, format: :time) if day.edit_day_finished_at.present? %></td>
+              <td><%= l(day.last_edit_day_started_at, format: :time) %></td>
+              <td><%= l(day.last_edit_day_finished_at, format: :time) %></td>
               <td><%= User.find(day.edit_day_request_superior).name %></td>
               <td><%= l(day.updated_at, format: :middle) %></td>
             </tr>

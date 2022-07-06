@@ -18,27 +18,41 @@
       <tbody>
         <% @attendances.each do |day| %>
           <%= f.fields_for "attendances[]", day do |attendance| %>
-            <tr>
-              <td><%= l(day.worked_on, format: :short) %></td>
-              <td><%= $days_of_the_week[day.worked_on.wday] %></td>
-                <% if !current_user.admin? && (Date.current < day.worked_on) %>
-                  <td><%= attendance.time_field :edit_day_started_at, readonly: true, class: "form-control" %></td>
-                  <td><%= attendance.time_field :edit_day_finished_at, readonly: true, class: "form-control" %></td>
-                <% else %>
-                  <td><%= attendance.time_field :edit_day_started_at, class: "form-control" %></td>
-                  <td><%= attendance.time_field :edit_day_finished_at, class: "form-control" %></td>
-                <% end %>
-              <td><%= attendance.check_box :next_day, id: "test" %></td>
-              <td>
-                <% if day.started_at.present? && day.finished_at.present? %>
-                  <%= working_times(day.started_at, day.finished_at, day.next_day) %>
-                <% end %>
-              </td>
-              <td><%= attendance.text_field :note, class: "form-control" %></td>
-              <td>
-                <%= attendance.collection_select(:edit_day_request_superior, @superiors, :id, :name, { include_blank: "選択してください" }) %>
-              </td>
-            </tr>
+            
+              <tr>
+                <td><%= l(day.worked_on, format: :short) %></td>
+                <td><%= $days_of_the_week[day.worked_on.wday] %></td>
+                  <% if !current_user.admin? && (Date.current < day.worked_on) %>
+                    <td><%= attendance.time_field :edit_day_started_at, readonly: true, class: "form-control" %></td>
+                    <td><%= attendance.time_field :edit_day_finished_at, readonly: true, class: "form-control" %></td>
+                  <% else %>
+                    <td>
+                      <% if day.edit_day_started_at.present? %>
+                        <%= attendance.time_field :last_edit_day_started_at, class: "form-control" %>
+                      <% else %>
+                        <%= attendance.time_field :edit_day_started_at, class: "form-control" %>
+                      <% end %>
+                    </td>
+                    <td>
+                      <% if day.edit_day_finished_at.present? %>
+                        <%= attendance.time_field :last_edit_day_finished_at, class: "form-control" %>
+                      <% else %>
+                        <%= attendance.time_field :edit_day_finished_at, class: "form-control" %>
+                      <% end %>
+                    </td>
+                  <% end %>
+                <td><%= attendance.check_box :next_day, id: "test" %></td>
+                <td>
+                  <% if day.started_at.present? && day.finished_at.present? %>
+                    <%= working_times(day.started_at, day.finished_at) %>
+                  <% end %>
+                </td>
+                <td><%= attendance.text_field :note, class: "form-control" %></td>
+                <td>
+                  <%= attendance.collection_select(:edit_day_request_superior, @superiors, :id, :name, { include_blank: "選択してください", selected: nil }) %>
+                </td>
+              </tr>
+            
           <% end %>
         <% end %>
       </tbody>

@@ -11,11 +11,19 @@ module AttendancesHelper
   end
 
   # 出勤時間と退勤時間を受け取り、在社時間を計算して返します。
-  def working_times(started_at, finished_at, next_day)
-    if next_day == "1"
-      format("%.2f", (((finished_at - started_at) / 60) / 60.0) +24)
-    elsif next_day == "0"
+  def working_times(started_at, finished_at)
+    #if next_day == "1"
+      #format("%.2f", (((finished_at - started_at) / 60) / 60.0) +24)
+    #elsif next_day == "0"
       format("%.2f", (((finished_at - started_at) / 60) / 60.0))
+    #end
+  end
+  
+  def edit_working_times(edit_day_started_at, edit_day_finished_at, next_day)
+    if next_day == "1"
+      format("%.2f", (((edit_day_finished_at - edit_day_started_at) / 60) / 60.0) +24)
+    elsif next_day == "0"
+      format("%.2f", (((edit_day_finished_at - edit_day_started_at) / 60) / 60.0))
     end
   end
   
@@ -30,5 +38,7 @@ module AttendancesHelper
   def superiors(over_request_superior)
     User.find(over_request_superior)
   end
+  
+
   
 end

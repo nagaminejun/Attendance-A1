@@ -28,14 +28,14 @@
 <div class="btn-users-show">
   <% if current_user.superior? %>
      <% if @edit_monthly_request.present? %>
-      <!-- link_to "【サンプル　所属長承認申請のお知らせ】", user_attendance_sample_edit_one_month_notice_path(@user, @attendances) %> -->
+      <!--= link_to "【サンプル　所属長承認申請のお知らせ】", user_attendance_sample_edit_one_month_notice_path(@user, @attendances) %> -->
       <%= link_to "【所属長承認申請のお知らせ】", user_attendance_edit_one_month_notice_path(@user, @attendances), remote: true, class: "text text-danger" %><%= @edit_monthly_request.count %>件
     <% else %>
       <a>【所属長承認申請のお知らせ】</a>
     <% end %>
     <br>
     <% if @edit_day_reqest.present? %>
-      <%= link_to "【サンプル　勤怠変更のお知らせ】", user_attendance_sample_edit_day_notice_path(@user, @attendances) %> 
+      <!--= link_to "【サンプル　勤怠変更のお知らせ】", user_attendance_sample_edit_day_notice_path(@user, @attendances) %>--> 
       <%= link_to "【勤怠変更のお知らせ】", user_attendance_edit_day_notice_path(@user, @attendances), remote: true, class: "text text-danger" %><%= @edit_day_reqest.count %>件
     <% else %>
       <a>【勤怠変更申請のお知らせ】</a>
@@ -52,8 +52,7 @@
     <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
     <%= link_to "CSV出力", attendances_edit_one_month_user_path(date: @first_day, format: :csv), class: "btn btn-primary" %>
   <br>
-  <%= link_to "勤怠修正ログ（承認済）", attendances_log_user_path, remote: true, class: "btn btn-primary" %> <%= link_to "サンプル　勤怠修正ログ（承認済）", attendances_sample_log_user_path, class: "btn btn-primary" %>
-  <%= link_to "サンプル2　勤怠修正ログ（承認済）", attendances_search_log_user_path, class: "btn btn-primary" %>
+    <!--%= link_to "勤怠修正ログ（承認済）", attendances_log_user_path, remote: true, class: "btn btn-primary" %>--> <%= link_to "勤怠修正ログ（承認済）", attendances_sample_log_user_path, class: "btn btn-primary" %>
 </div>
 <div>
   <table class="table table-bordered table-condensed table-hover" id="table-attendances">
@@ -92,9 +91,12 @@
           <td><%= link_to "残業申請", user_attendance_edit_overwork_reqest_path(@user, day), remote: true, class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td><%= $days_of_the_week[day.worked_on.wday] %></td>
-          <% if day. edit_day_started_at.present? && day.edit_day_request_status == "承認" %>
+          <% if day.last_edit_day_started_at.nil? && day.edit_day_request_status == "承認" %>
             <td><%= l(day.edit_day_started_at, format: :hour) %></td>
             <td><%= l(day.edit_day_started_at, format: :minute) %></td>
+          <% elsif day.edit_day_started_at.present? && day.edit_day_request_status == "承認" %>
+            <td><%= l(day.last_edit_day_started_at, format: :hour) %></td>
+            <td><%= l(day.last_edit_day_started_at, format: :minute) %></td>
           <% else %>
             <td><%= l(day.started_at, format: :hour) if day.started_at.present? %></td>
             <td><%= l(day.started_at, format: :minute) if day.started_at.present? %></td>
@@ -104,16 +106,21 @@
               <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
             <% end %>
           </td>
-          <% if day. edit_day_finished_at.present? && day.edit_day_request_status == "承認" %>
+          <% if day.last_edit_day_started_at.nil? && day.edit_day_request_status == "承認" %>
             <td><%= l(day.edit_day_finished_at, format: :hour) %></td>
             <td><%= l(day.edit_day_finished_at, format: :minute) %></td>
+          <% elsif day.last_edit_day_finished_at.present? && day.edit_day_request_status == "承認" %>
+            <td><%= l(day.last_edit_day_finished_at, format: :hour) %></td>
+            <td><%= l(day.last_edit_day_finished_at, format: :minute) %></td>
           <% else %>
             <td><%= l(day.finished_at, format: :hour) if day.finished_at.present? %></td>
             <td><%= l(day.finished_at, format: :minute) if day.finished_at.present? %></td>
           <% end %>
           <td>
-            <% if day.started_at.present? && day.finished_at.present? %>
-              <%= working_times(day.started_at, day.finished_at, day.next_day) %>
+            <% if day.finished_at.present? && day.edit_day_finished_at.nil? %>
+              <%= working_times(day.started_at, day.finished_at) %>
+            <% elsif day.edit_day_finished_at.present? && day.edit_day_request_status == "承認" %>
+              <%= edit_working_times(day.edit_day_started_at, day.edit_day_finished_at, day.next_day) %>
             <% end %>
           </td>
           <td><%= day.note %></td>
@@ -127,14 +134,26 @@
           <td><%= day.work_description %></td>
           <td>
             <% if day.scheduled_end_time.present? %>
-              <%= superiors(day.over_request_superior).name %>残業<%= day.over_request_status %>。
+              <%= superiors(day.over_request_superior).name %>
+                <% if day.over_request_status == "申請中" %>
+                  へ 
+                <% else %>
+                  より結果 → 
+                <% end %>
+              残業 <%= day.over_request_status %>
             <% end %>
             <br>
             <% if day.edit_day_request_superior.present? %>
-              <%= User.find(day.edit_day_request_superior).name %>勤怠変更<%= day.edit_day_request_status %>。
+              <%= User.find(day.edit_day_request_superior).name %>
+                <% if day.edit_day_request_status == "申請中" %>
+                  へ 
+                <% else %>
+                  より結果 → 
+                <% end %>
+              勤怠変更 <%= day.edit_day_request_status %>
             <% end %>
           </td>
-          <td><%= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td> <!--あとでこのタブ消す-->
+          <!--<td><= link_to "サンプル", user_attendance_sample_path(@user, day), class: "btn btn-primary" %></td> <!--あとでこのタブ消す-->
         </tr>
       </tbody>
     <% end %>
@@ -149,7 +168,13 @@
       <td>
         
         <% if @apply.edit_one_month_request_superior.present? %>
-          <%= User.find(@apply.edit_one_month_request_superior).name %><%= @apply.edit_one_month_request_status %>
+          <%= User.find(@apply.edit_one_month_request_superior).name %>
+            <% if @apply.edit_one_month_request_status == "申請中" %>
+              へ
+            <% else %>
+              より結果 →
+            <% end %>
+          <%= @apply.edit_one_month_request_status %>
         <% end %>
         <br>
         <%= form_with(model: @attendance, url: attendances_edit_monthly_request_user_path(date: @first_day), local: true, method: :patch) do |f| %>

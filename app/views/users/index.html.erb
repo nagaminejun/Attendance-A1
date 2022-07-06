@@ -12,7 +12,7 @@
     <div>
       <p>
         <div class="col-md-11 col-md-offset-1">
-          <% if current_user.admin? && !current_user?(user) %>
+          <!--< if current_user.admin? && !current_user?(user) %>これは使わない方がいい。重くなる。解説は倉谷さんスラック過去質問にて。!current_user?(user)が、管理者を非表示にしている --> 
           <%= user.name %><br>
           <%= link_to "削除", user, method: :delete,
                                     data: { confirm: "削除してもよろしいですか？" },
@@ -28,7 +28,7 @@
                 <div class="panel-body"><%= render 'user', user: user %></div>
               </div>
             </div>
-          <% end %>
+          <!-- end %>-->
         </div>
       </p>
     </div>

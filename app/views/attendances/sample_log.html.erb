@@ -29,10 +29,10 @@
       <% @attendances.each do |day| %>
         <tr>
           <td><%= l(day.worked_on, format: :short) %></td>
-          <td><%= l(day.started_at, format: :time) if day.started_at.present? %></td>
-          <td><%= l(day.finished_at, format: :time) if day.finished_at.present? %></td>
-          <td><%= l(day.edit_day_started_at, format: :time) %></td>
-          <td><%= l(day.edit_day_finished_at, format: :time) %></td>
+          <td><%= l(day.edit_day_started_at, format: :time) if day.edit_day_started_at.present? %></td>
+          <td><%= l(day.edit_day_finished_at, format: :time) if day.edit_day_finished_at.present? %></td>
+          <td><%= l(day.last_edit_day_started_at, format: :time) if day.last_edit_day_started_at.present? %></td>
+          <td><%= l(day.last_edit_day_finished_at, format: :time) if day.last_edit_day_finished_at.present? %></td>
           <td><%= User.find(day.edit_day_request_superior).name %></td>
           <td><%= l(day.updated_at, format: :middle) %></td>
         </tr>

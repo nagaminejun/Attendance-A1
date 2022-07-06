@@ -37,15 +37,25 @@ class AttendancesController < ApplicationController
   end
 
   def update_one_month
+    c1 = 0
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       attendances_params.each do |id, item|
-        attendance = Attendance.find(id)
-        item[:edit_day_request_status] = "申請中"
-        attendance.update_attributes!(item)
+        attendance = Attendance.find(id) # Attendanceテーブルから1つのidを見つける
+        if item[:edit_day_request_superior].present?
+          item[:edit_day_request_status] = "申請中"
+          c1 += 1
+          attendance.update_attributes!(item)
+        end
       end
     end
-    flash[:success] = "勤怠編集を申請しました。"
-    redirect_to user_url(date: params[:date])
+    if c1 > 0
+      flash[:success] = "勤怠編集を#{c1}件、申請しました。"
+      redirect_to user_url(date: params[:date])
+    else
+      flash[:danger] = "上長を選択してください"
+      redirect_to attendances_edit_one_month_user_url(date: params[:date])
+    end
+        
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
     redirect_to attendances_edit_one_month_user_url(date: params[:date])
@@ -69,12 +79,14 @@ class AttendancesController < ApplicationController
       send_data(csv_data, filename: "勤怠一覧表.csv")
   end
   
+  #残業申請フォーム、ポップアップの表示
   def edit_overwork_reqest
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:attendance_id])
     @superiors = User.where(superior: true).where.not(id: @user.id)
   end
   
+  # ポップアップから残業申請する機能
   def update_overwork_reqest
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:attendance_id])
@@ -88,12 +100,14 @@ class AttendancesController < ApplicationController
     redirect_to @user
   end
   
+  # 残業申請のHTMLページ表示
   def sample
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:attendance_id])
     @superiors = User.where(superior: true).where.not(id: @user.id)
   end
   
+  # 残業申請をHTMLページから申請する機能
   def sample_update_overwork_reqest
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:attendance_id])
@@ -107,6 +121,7 @@ class AttendancesController < ApplicationController
     redirect_to @user
   end
   
+  # 上長側、残業申請通知画面をHTMLで表示する機能
   def sample_edit_overwork_notice
     @user = User.find(params[:user_id])
     @attendances = Attendance.where(over_request_status: "申請中", over_request_superior: @user.id).order(:worked_on).group_by(&:user_id)
@@ -116,29 +131,33 @@ class AttendancesController < ApplicationController
     #group_byメソッド,要素をグループ分けするためのメソッド、※引数に「&:」が必要！
   end
   
+  # 上長側、残業申請通知画面をポップアップで表示
   def edit_overwork_notice
     @user = User.find(params[:user_id])
     @attendances = Attendance.where(over_request_status: "申請中", over_request_superior: @user.id).order(:worked_on).group_by(&:user_id)
   end
   
+  # 上長側、残業申請結果を送信する機能
   def edit_overwork_approval
     @user = User.find(params[:user_id])
+    c1 = 0
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       overwork_approval_params.each do |id, item|
         attendance = Attendance.find(id)
         if item[:change] == "1"
+          c1 += 1
           attendance.update_attributes!(item)
         end
       end
     end
-    flash[:success] = "残業申請の結果を送信しました"
+    flash[:success] = "残業申請の結果を#{c1}件、送信しました"
     redirect_to @user
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
     redirect_to @user
   end
   
-  #勤怠申請のお知らせ一覧
+  # 上長側、勤怠変更申請のお知らせ一覧をHTMLで表示
   def sample_edit_day_notice
     @user = User.find(params[:user_id])
     @superiors = User.where(superior: true).where.not(id: @user.id)
@@ -152,62 +171,71 @@ class AttendancesController < ApplicationController
     @attendances = Attendance.where(edit_day_request_status: "申請中", edit_day_request_superior: @user.id).order(:worked_on).group_by(&:user_id)
   end
   
-  #勤怠申請の承認アクション
+  #勤怠変更申請結果を送信するアクション
   def edit_day_approval
     @user = User.find(params[:user_id])
+    c1 = 0
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       edit_day_approval_params.each do |id, item|
         attendance = Attendance.find(id)
         if item[:edit_day_check_confirm] == "1"
+          c1 += 1
           attendance.update_attributes!(item)
         end
       end
     end
-    flash[:success] = "勤怠編集申請の結果を送信しました"
+    flash[:success] = "勤怠編集申請の#{c1}件、結果を送信しました"
     redirect_to @user
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
     redirect_to @user
   end
   
-    def edit_monthly_request
-      #@user = User.find(params[:user_id])
-      #@attendance = Attendance.find_by(params[:date])
-      #@first_day = params[:date].nil? ? Date.current.beginning_of_month : params[:date].to_date #月の初日を取得
-      @apply = @user.attendances.find_by(worked_on: params[:date])
-      params[:edit_one_month_request_status] = "申請中"
-      @apply.update_attributes(monthly_request_params)
-      flash[:success] = "1ヶ月分の勤怠情報を申請しました。"
-      redirect_to user_url(current_user)
-    end
-
+  # 右下の月の勤怠申請アクション
+  def edit_monthly_request
+    #@user = User.find(params[:user_id])
+    #@attendance = Attendance.find_by(params[:date])
+    #@first_day = params[:date].nil? ? Date.current.beginning_of_month : params[:date].to_date #月の初日を取得
+    @apply = @user.attendances.find_by(worked_on: params[:date])
+    params[:edit_one_month_request_status] = "申請中"
+    @apply.update_attributes(monthly_request_params)
+    flash[:success] = "1ヶ月分の勤怠情報を申請しました。"
+    redirect_to user_url(current_user)
+  end
+  
+  # 月の勤怠申請のお知らせ画面　HTMLで表示
   def sample_edit_one_month_notice
     @user = User.find(params[:user_id])
     @attendances = Attendance.where(edit_one_month_request_status: "申請中", edit_one_month_request_superior: @user.id).order(:worked_on).group_by(&:user_id)
   end
   
+  # 月の勤怠申請のお知らせ画面　モーダルで表示
   def edit_one_month_notice
     @user = User.find(params[:user_id])
     @attendances = Attendance.where(edit_one_month_request_status: "申請中", edit_one_month_request_superior: @user.id).order(:worked_on).group_by(&:user_id)
   end
   
+  # 月の勤怠申請結果を送信　アクション
   def edit_one_month_approval
     @user = User.find(params[:user_id])
+    c1 = 0
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       monthly_approval_params.each do |id, item|
         attendance = Attendance.find(id)
         if item[:edit_one_month_check_confirm] == "1"
+          c1 += 1
           attendance.update_attributes!(item)
         end
       end
     end
-    flash[:success] = "所属長承認申請の結果を送信しました"
+    flash[:success] = "所属長承認申請の結果を#{c1}件、送信しました"
     redirect_to @user
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
     redirect_to @user
   end
   
+  # 勤怠修正ログ画面をHTMLで表示
   def sample_log
     @user = User.find(params[:id]) #これ無くても機能出来た
     #@search = Attendance.where(edit_day_request_status: "承認").order(:worked_on).ransack(params[:q]) これでも出来る
@@ -215,22 +243,13 @@ class AttendancesController < ApplicationController
     @attendances = @search.result
   end
   
+  # 勤怠修正ログ画面をモーダルで表示
   def log
     @user = User.find(params[:id])
-    @attendances = Attendance.where(edit_day_request_status: "承認").order(:worked_on)
+    @search = @user.attendances.where(edit_day_request_status: "承認").order(:worked_on).ransack(params[:q])
+    @attendances = @search.result
   end
   
-  def search_log
-    @user = User.find(params[:id])
-    @attendances = Attendance.where(edit_day_request_status: "承認").order(:worked_on)
-    @search = Attendance.ransack(params[:q])
-    # 検索オブジェクト
-    #@search = Attendance.where(edit_day_request_status: "承認").order(:worked_on)
-    # 検索結果
-    @result = @search.result
-  end
-    
-
 
   private
   
@@ -238,7 +257,16 @@ class AttendancesController < ApplicationController
 
     # 1ヶ月分の勤怠情報を扱います。
     def attendances_params
-      params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :next_day, :edit_day_request_superior, :edit_day_request_status, :edit_day_started_at, :edit_day_finished_at])[:attendances]
+      params.require(:user).permit(attendances: [:started_at,
+                                                 :finished_at,
+                                                 :note,
+                                                 :next_day,
+                                                 :edit_day_request_superior,
+                                                 :edit_day_request_status,
+                                                 :edit_day_started_at,
+                                                 :edit_day_finished_at,
+                                                 :last_edit_day_started_at,
+                                                 :last_edit_day_finished_at])[:attendances]
     end
     
     def overwork_params
